@@ -41,7 +41,7 @@ public class Worker : BackgroundService
             catch (Exception ex)
             {
                 Console.WriteLine($"[!] Erro: {ex.Message}");
-                await RetryOrMoveToErrorQueue<BankAccountDTO>(ea);
+                await RetryOrMoveToErrorQueue<BankAccountDTO>(ea, ex);
             }
         };
 
@@ -135,7 +135,7 @@ public class Worker : BackgroundService
         await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
     }
 
-    private async Task RetryOrMoveToErrorQueue<T>(BasicDeliverEventArgs ea)
+    private async Task RetryOrMoveToErrorQueue<T>(BasicDeliverEventArgs ea, Exception ex)
     {
         const int maxRetryCount = 3;
 
@@ -148,7 +148,7 @@ public class Worker : BackgroundService
             return;
         }
 
-        if (wrapper.RetryCount < maxRetryCount)
+        if (ex is TimeoutException && wrapper.RetryCount < maxRetryCount)
         {
             wrapper.RetryCount++;
             var retryMessageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(wrapper));
