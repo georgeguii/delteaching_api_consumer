@@ -10,11 +10,6 @@ services:
       ACCEPT_EULA: "Y"
     networks:
       - mynetwork
-    healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1"]
-      interval: 3s
-      retries: 3
-      start_period: 10s
 
   delteaching-dotnet:
     build:
@@ -22,10 +17,14 @@ services:
       dockerfile: delteaching-dotnet/Dockerfile
     depends_on:
       sqlserver:
-        condition: service_healthy
+        condition: service_started
+      rabbitmq:
+        condition: service_started
     environment:
       - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=master;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - mynetwork
     
   rabbitmq:
     image: rabbitmq:3-management
