@@ -7,15 +7,15 @@ using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionando serviços do Swagger
+// Adicionando serviÃ§os do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "API de Gerenciamento de Contas Bancárias",
+        Title = "API de Gerenciamento de Contas Bancarias",
         Version = "v1",
-        Description = "API para realizar operações de CRUD em contas bancárias."
+        Description = "API para realizar operaÃ§Ãµes de CRUD em contas bancarias."
     });
 });
 
@@ -29,16 +29,16 @@ builder.Services.AddDbContext<DelTeachingContext>(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Contas Bancárias v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Contas Bancarias v1");
     });
-}
+// }
 
-// **GET** - Listar todas as contas bancárias
+// **GET** - Listar todas as contas bancï¿½rias
 app.MapGet("/api/v1/bank-accounts", async (DelTeachingContext dbContext) =>
 {
     return Results.Ok(await dbContext.BankAccounts.FindAsync());
@@ -47,17 +47,17 @@ app.MapGet("/api/v1/bank-accounts", async (DelTeachingContext dbContext) =>
 .WithName("GetAllAccounts")
 .WithOpenApi();
 
-// **GET** - Buscar uma conta bancária por ID
+// **GET** - Buscar uma conta bancï¿½ria por ID
 app.MapGet("/api/v1/bank-accounts/{id}", (int id, DelTeachingContext dbContext) =>
 {
     var account = dbContext.BankAccounts.FirstOrDefault(c => c.Id == id);
-    return account is not null ? Results.Ok(account) : Results.NotFound(new { message = "Conta não encontrada" });
+    return account is not null ? Results.Ok(account) : Results.NotFound(new { message = "Conta nÃ£o encontrada" });
 })
     .WithTags("BankAccounts")
     .WithName("GetBankAccountById")
     .WithOpenApi();
 
-// **POST** - Criar uma nova conta bancária
+// **POST** - Criar uma nova conta bancï¿½ria
 app.MapPost("/api/v1/bank-accounts", async (BankAccountDTO newAccountDTO, HttpContext context, DelTeachingContext dbContext) =>
 {
     var validationResults = new List<ValidationResult>();
@@ -65,7 +65,7 @@ app.MapPost("/api/v1/bank-accounts", async (BankAccountDTO newAccountDTO, HttpCo
 
     if (!isValid)
     {
-        return Results.BadRequest(validationResults);  // Retorna erros de validação
+        return Results.BadRequest(validationResults);  // Retorna erros de validaï¿½ï¿½o
     }
 
     var newEntity = BankAccount.FromDTO(newAccountDTO);
@@ -91,7 +91,7 @@ app.MapPost("/api/v1/bank-accounts", async (BankAccountDTO newAccountDTO, HttpCo
     .WithOpenApi();
 
 
-// **PUT** - Atualizar uma conta bancária
+// **PUT** - Atualizar uma conta bancï¿½ria
 app.MapPut("/api/v1/bank-accounts/{id}", async (int id, BankAccountDTO updateBankAccount, DelTeachingContext dbContext) =>
 {
     var validationResults = new List<ValidationResult>();
@@ -99,13 +99,13 @@ app.MapPut("/api/v1/bank-accounts/{id}", async (int id, BankAccountDTO updateBan
 
     if (!isValid)
     {
-        return Results.BadRequest(validationResults);  // Retorna erros de validação
+        return Results.BadRequest(validationResults);  // Retorna erros de validaï¿½ï¿½o
     }
 
     var entityAccount = dbContext.BankAccounts.FirstOrDefault(c => c.Id == id);
 
     if (entityAccount is null)
-        return Results.NotFound(new { message = "Conta não encontrada" });
+        return Results.NotFound(new { message = "Conta nï¿½o encontrada" });
 
     entityAccount.Update(updateBankAccount);
     dbContext.BankAccounts.Update(entityAccount);
